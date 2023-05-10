@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS image (
   name VARCHAR(250) NOT NULL,
   date DATE NOT NULL,
   productos_id VARCHAR(50) NOT NULL,
-  FOREIGN KEY (productos_id) REFERENCES productos(id)
+  FOREIGN KEY (productos_id) REFERENCES productos(id) ON DELETE CASCADE
 );
 `;
 

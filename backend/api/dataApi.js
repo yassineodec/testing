@@ -60,9 +60,8 @@ data_router.post("/productos", (req, res) => {
       res.status(500).send("Error al insertar el producto");
       return;
     }
-
-    console.log(`Producto añadido con ID: ${result.insertId}`);
-    res.status(201).send(`Producto añadido con ID: ${result.insertId}`);
+    console.log(`Producto añadido con ID: ${values[0]}`);
+    res.status(201).send(`Producto añadido con ID: ${values[0]}`);
   });
 });
 

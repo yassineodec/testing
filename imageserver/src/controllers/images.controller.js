@@ -77,7 +77,7 @@ exports.uploadFile = (req, res) => {
           if (err) {
             console.log("Error al insertar imagen:", err);
           } else {
-            console.log("Imagen insertada correctamente:", imageData);
+            console.log("Imagen insertada correctamente");
           }
         }
       );
