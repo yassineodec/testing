@@ -18,61 +18,33 @@
           class="relative min-h-screen flex items-center justify-center bg-gray-200 py-12 px-4 sm:px-6 lg:px-8 bg-gray-500 bg-no-repeat bg-cover relative items-center"
         >
           <div class="absolute bg-gray-200 inset-0 z-0"></div>
-          <div class="sm:max-w-lg w-full p-10 bg-white rounded-xl z-10">
+          <div class="sm:max-w-lg w-full p-10 shadow bg-white rounded-xl z-10">
             <div class="text-center">
               <h2 class="mt-5 text-3xl font-bold text-gray-900">
                 Publica las fotos!
               </h2>
               <p class="mt-2 text-sm text-gray-400">
-                Lorem ipsum is placeholder text.
+                Solo puedes subir 5 imagenes.
               </p>
             </div>
-            <form class="mt-8 space-y-3" action="#" method="POST">
+            <form class="mt-8 space-y-3">
               <div class="grid grid-cols-1 space-y-2">
-                <label class="text-sm font-bold text-gray-500 tracking-wide"
+                <label class="text-sm font-bold text-black-500 tracking-wide"
                   >Attach Document</label
                 >
-                <div class="flex items-center justify-center w-full">
-                  <label
-                    class="flex flex-col rounded-lg border-4 border-dashed w-full h-60 p-10 group text-center"
-                  >
-                    <div
-                      class="h-full w-full text-center flex flex-col items-center justify-center items-center"
-                    >
-                      <!---<svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-blue-400 group-hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                    </svg>-->
-                      <div class="flex flex-auto max-h-48 w-2/5 mx-auto -mt-10">
-                        <img
-                          class="has-mask h-36 object-center"
-                          src="https://img.freepik.com/free-vector/image-upload-concept-landing-page_52683-27130.jpg?size=338&ext=jpg"
-                          alt="freepik image"
-                        />
-                      </div>
-                      <p class="pointer-none text-gray-500">
-                        <span class="text-sm">Drag and drop</span> files here
-                        <br />
-                        or
-                        <a href="" id="" class="text-blue-600 hover:underline"
-                          >select a file</a
-                        >
-                        from your computer
-                      </p>
-                    </div>
-                    <input
-                      type="file"
-                      ref="fileInput"
-                      @change="handleFileUpload"
-                      multiple
-                    />
-                  </label>
-                </div>
+                <input
+                  type="file"
+                  ref="fileInput"
+                  multiple
+                  @change="handleFileUpload"
+                />
               </div>
-              <p class="text-sm text-gray-300">
-                <span>File type: doc,pdf,types of images</span>
+              <p class="text-sm text-black-300">
+                <span>File type: jpg,png</span>
               </p>
               <div>
                 <button
+                  @click="uploadFiles"
                   type="submit"
                   class="my-5 w-full flex justify-center bg-orange-500 text-gray-100 p-4 rounded-full tracking-wide font-semibold focus:outline-none focus:shadow-outline hover:bg-orange-600 shadow-lg cursor-pointer transition ease-in duration-300"
                 >
@@ -209,14 +181,7 @@
                   placeholder="Cambio"
                 />
               </div>
-              <div class="col-span-2">
-                <input
-                  type="file"
-                  name="images"
-                  multiple
-                  @change="handleFileUpload"
-                />
-              </div>
+              <div class="col-span-2"></div>
               <div class="col-span-2 text-right">
                 <button
                   @click="submitPost"
@@ -280,8 +245,32 @@ export default {
     console.log(code); // Imprimir el código generado en la consola
   },
   methods: {
-    handleFileUpload(event) {
-      this.files = event.target.files;
+    handleFileUpload() {
+      this.files = Array.from(this.$refs.fileInput.files);
+    },
+    async uploadFiles() {
+      const formData = new FormData();
+      this.files.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:5000/images/image/${this.anuncio.id}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (response.ok) {
+          alert("Anuncio creado");
+        } else {
+          alert("Error al subir las imágenes");
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
     submitPost() {
       fetch("http://127.0.0.1:10520/api/data/productos", {
@@ -300,6 +289,12 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    redirect() {
+      this.$router.push("/");
+    },
+    redirectError() {
+      this.$router.push("/create-post");
     },
   },
 };
