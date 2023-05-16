@@ -20,7 +20,7 @@ export default createStore({
     logOut({ commit }) {
       let token = window.sessionStorage.getItem("access_token");
       axios
-        .get("http://127.0.0.1:10520/api/user/logout", {
+        .get("http://192.168.1.70:10520/api/user/logout", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

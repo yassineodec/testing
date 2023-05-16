@@ -1,6 +1,6 @@
 const models = require("../db/db");
 const express = require("express");
-const user_router = express.Router();
+const router_usuario = express.Router();
 const mysql = require("mysql");
 const $sql = require("../db/sqlMap");
 
@@ -9,18 +9,18 @@ const { authenticateToken } = require("./functions");
 
 const authConfig = getAuthConfig();
 
-let conn = mysql.createConnection(models.mysql);
-conn.connect();
-conn.on("error", (err) => {
+let conexion = mysql.createConnection(models.mysql);
+conexion.connect();
+conexion.on("error", (err) => {
   console.log("Re-connecting lost conn: ");
-  conn = mysql.createConnection(models.mysql);
+  conexion = mysql.createConnection(models.mysql);
 });
 
-user_router.post("/login", (req, res) => {
+router_usuario.post("/login", (req, res) => {
   const user = req.body;
   const sel_username =
     $sql.user.select + " where username = '" + user.username + "'";
-  conn.query(sel_username, (error, results) => {
+  conexion.query(sel_username, (error, results) => {
     if (error) {
       console.log(error);
     }
@@ -53,7 +53,7 @@ user_router.post("/login", (req, res) => {
         });
       } else {
         if (results[0].failed_times >= 4) {
-          conn.query(
+          conexion.query(
             $sql.user.update_failed_times,
             [0, user.username],
             (error, results) => {
@@ -61,7 +61,7 @@ user_router.post("/login", (req, res) => {
                 console.log(error);
               } else {
                 console.log(Date.now());
-                conn.query(
+                conexion.query(
                   $sql.user.update_block_time,
                   [parseInt(Date.now() / 1000), user.username],
                   (error, results) => {
@@ -79,7 +79,7 @@ user_router.post("/login", (req, res) => {
             }
           );
         } else {
-          conn.query(
+          conexion.query(
             $sql.user.update_failed_times,
             [results[0].failed_times + 1, user.username],
             (error, results) => {
@@ -99,13 +99,13 @@ user_router.post("/login", (req, res) => {
   });
 });
 
-user_router.post("/add", (req, res) => {
+router_usuario.post("/add", (req, res) => {
   const params = req.body;
   const sel_sql =
     $sql.user.select + " where username = '" + params.username + "'";
   const add_sql = $sql.user.add;
 
-  conn.query(sel_sql, (error, results) => {
+  conexion.query(sel_sql, (error, results) => {
     if (error) {
       console.log(err);
     }
@@ -115,7 +115,7 @@ user_router.post("/add", (req, res) => {
         message: "username occupied",
       });
     } else {
-      conn.query(
+      conexion.query(
         add_sql,
         [params.username, params.email, params.password],
         (err, rst) => {
@@ -134,13 +134,13 @@ user_router.post("/add", (req, res) => {
   });
 });
 
-user_router.get("/userdetails", authenticateToken, (req, res) => {
+router_usuario.get("/userdetails", authenticateToken, (req, res) => {
   const username = req.query.username;
 
   const sql = $sql.user.select + " where username = ?";
   const values = [username];
 
-  conn.query(sql, values, (error, results) => {
+  conexion.query(sql, values, (error, results) => {
     if (error) {
       console.log(error);
       res.json({
@@ -167,14 +167,48 @@ user_router.get("/userdetails", authenticateToken, (req, res) => {
   });
 });
 
-user_router.put("/updateuser", authenticateToken, (req, res) => {
+router_usuario.get("/userdetailsid/:id", authenticateToken, (req, res) => {
+  const userId = req.params.id;
+
+  const sql = $sql.user.select + " where id = ?";
+  const values = [userId];
+
+  conexion.query(sql, values, (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.json({
+        code: "-1",
+        message: "error",
+      });
+    }
+
+    if (results.length === 0) {
+      return res.json({
+        code: "-1",
+        message: "user found",
+      });
+    }
+
+    const user = results[0];
+    res.json({
+      code: "0",
+      message: "success",
+      data: {
+        username: user.username,
+        email: user.email,
+      },
+    });
+  });
+});
+
+router_usuario.put("/updateuser", authenticateToken, (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
 
   const checkEmailSql = "SELECT * FROM user WHERE email = ?";
   const checkEmailValues = [email];
 
-  conn.query(
+  conexion.query(
     checkEmailSql,
     checkEmailValues,
     (checkEmailError, checkEmailResults) => {
@@ -193,27 +227,31 @@ user_router.put("/updateuser", authenticateToken, (req, res) => {
         const updateSql = "UPDATE user SET email = ? WHERE username = ?";
         const updateValues = [email, username];
 
-        conn.query(updateSql, updateValues, (updateError, updateResults) => {
-          if (updateError) {
-            console.log(updateError);
-            res.json({
-              code: "-1",
-              message: "error",
-            });
-          } else {
-            res.json({
-              code: "0",
-              message: "success",
-            });
+        conexion.query(
+          updateSql,
+          updateValues,
+          (updateError, updateResults) => {
+            if (updateError) {
+              console.log(updateError);
+              res.json({
+                code: "-1",
+                message: "error",
+              });
+            } else {
+              res.json({
+                code: "0",
+                message: "success",
+              });
+            }
           }
-        });
+        );
       }
     }
   );
 });
 
-user_router.get("/logout", (req, res) => {
+router_usuario.get("/logout", (req, res) => {
   res.json({ message: "Session cerrada" });
 });
 
-module.exports = user_router;
+module.exports = router_usuario;

@@ -10,6 +10,7 @@ routes.post(
 );
 
 routes.get("/images/anuncios", imagesController.getAnuncioImages);
+routes.get("/images/anuncio/:id", imagesController.getAnuncioImagesId);
 routes.get("/images/:filename", imagesController.getImage);
 
 module.exports = routes;

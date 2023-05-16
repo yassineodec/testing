@@ -1,5 +1,5 @@
 <template>
-  <div class="grid w-full h-screen bg-gray-200 items-center">
+  <div class="grid bg-gray-200 items-center">
     <div
       class="shadow-lg rounded-2xl p-4 bg-white dark:bg-gray-800 w-72 m-auto"
     >
@@ -82,14 +82,6 @@
             >
               Submit
             </button>
-            <router-link to="/register"
-              ><button
-                type="button"
-                class="py-2 px-4 bg-white border-2 border-orange-500 text-orange-500 hover:text-gray-600 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md rounded-lg"
-              >
-                Register
-              </button></router-link
-            >
           </div>
         </div>
       </div>

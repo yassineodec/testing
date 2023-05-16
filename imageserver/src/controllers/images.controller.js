@@ -43,6 +43,30 @@ exports.getAnuncioImages = (req, res) => {
   });
 };
 
+exports.getAnuncioImagesId = (req, res) => {
+  const anuncioId = req.params.id; // Obtener el ID del anuncio desde los parámetros de la solicitud
+
+  req.getConnection((err, conn) => {
+    if (err) {
+      console.log(err);
+      res.sendStatus(500);
+      return;
+    }
+
+    const sql =
+      "SELECT id, productos_id, name FROM image WHERE productos_id = ?";
+    conn.query(sql, [anuncioId], (err, results) => {
+      if (err) {
+        console.log(err);
+        res.sendStatus(500);
+      } else {
+        const images = results.map((result) => result.name); // Obtener solo los nombres de las imágenes
+        res.json(images);
+      }
+    });
+  });
+};
+
 const upload = multer({ storage: storage });
 
 exports.upload = upload.array("images", 5);
@@ -64,11 +88,11 @@ exports.uploadFile = (req, res) => {
       const file = req.files[i];
       const type = file.mimetype;
       const name = file.originalname;
-      const date = fs.readFileSync(
-        path.join(__dirname, "../../images/" + file.filename)
-      );
 
-      const imageData = { type, name, date, productos_id };
+      // Crear un stream de lectura para la imagen
+      const stream = fs.createReadStream(file.path);
+
+      const imageData = { type, name, date: stream, productos_id };
 
       conn.query(
         "INSERT INTO " + req.params.tabla + " SET ?",
@@ -77,7 +101,7 @@ exports.uploadFile = (req, res) => {
           if (err) {
             console.log("Error al insertar imagen:", err);
           } else {
-            console.log("Imagen insertada correctamente");
+            console.log("Imagen insertada correctamente:", imageData);
           }
         }
       );

@@ -94,6 +94,35 @@
                     />
                   </div>
                 </div>
+                <div class="mb-4">
+                  <h3 class="text-gray-700 font-medium mb-2">Año</h3>
+                  <div class="flex items-center">
+                    <input
+                      type="number"
+                      class="w-1/2 px-4 py-2 mr-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                      placeholder="Km mínimo"
+                      v-model.number="filtroAnnoMin"
+                    />
+                    <input
+                      type="number"
+                      class="w-1/2 px-4 py-2 mr-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                      placeholder="Km máximo"
+                      v-model.number="filtroAnnoMax"
+                    />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <h3 class="text-gray-700 font-medium mb-2">Cambio</h3>
+                  <select
+                    v-model="filtroTransmision"
+                    class="w-1/2 px-4 py-2 mr-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="">Todos</option>
+                    <option value="manual">Manual</option>
+                    <option value="automatico">Automático</option>
+                  </select>
+                </div>
+
                 <!-- Botón para cerrar el popup de filtros -->
                 <div>
                   <div class="mt-4 flex flex-col">
@@ -125,7 +154,7 @@
               >
                 <img
                   class="lg:h-48 md:h-36 w-full object-cover object-center"
-                  :src="'http://localhost:5000/images/' + producto.imagen"
+                  :src="'http://192.168.1.70:5000/images/' + producto.imagen"
                   alt="blog"
                 />
                 <div class="p-6">
@@ -160,14 +189,15 @@
                     </span>
                     <div class="flex justify-start">
                       <button
-                        :class="
-                          producto.estado
-                            ? 'bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded'
-                            : 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+                        class="bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-4 rounded"
+                        @click="
+                          $router.push({
+                            name: 'vista solitaria',
+                            params: { id: producto.id },
+                          })
                         "
-                        class="ml-auto"
                       >
-                        {{ producto.estado ? "Visitar" : "Vendido" }}
+                        Visitar
                       </button>
                     </div>
                   </div>
@@ -192,6 +222,7 @@ export default {
   },
   data() {
     return {
+      pageReloaded: false,
       todosProductos: [],
       imagenes: [],
       productos: [], // array de productos
@@ -202,6 +233,9 @@ export default {
       filtroPrecioMax: null,
       filtroKmMin: null,
       filtroKmMax: null,
+      filtroAnnoMin: null,
+      filtroAnnoMax: null,
+      filtroTransmision: "",
     };
   },
   methods: {
@@ -228,6 +262,13 @@ export default {
         ) {
           return false;
         }
+        // Filtrar por Año
+        if (
+          (this.filtroAnnoMin && producto.anno < this.filtroAnnoMin) ||
+          (this.filtroAnnoMax && producto.anno > this.filtroAnnoMax)
+        ) {
+          return false;
+        }
         // Filtrar por km
         if (
           (this.filtroKmMin && producto.km < this.filtroKmMin) ||
@@ -235,34 +276,47 @@ export default {
         ) {
           return false;
         }
+        // Filtrar por transmisión
+        if (
+          (this.filtroTransmision === "manual" &&
+            producto.cambio !== "manual") ||
+          (this.filtroTransmision === "automatico" &&
+            producto.cambio !== "automatico")
+        ) {
+          return false;
+        }
+
         return true;
       });
+
+      this.mostrarFiltros = !this.mostrarFiltros;
     },
+
     resetFiltros() {
       this.filtroPrecioMin = null;
       this.filtroPrecioMax = null;
       this.filtroKmMin = null;
       this.filtroKmMax = null;
+      this.filtroAnnoMax = null;
+      this.filtroAnnoMin = null;
+      this.filtroTransmision = "";
       this.mostrarFiltros = !this.mostrarFiltros;
       this.productos = this.productosOriginales;
     },
   },
   created() {
-    fetch("http://127.0.0.1:10520/api/data/productos")
+    fetch("http://192.168.1.70:5000/images/anuncios")
+      .then((response) => response.json())
+      .then((data) => {
+        this.imagenes = data;
+      });
+  },
+  mounted() {
+    fetch("http://192.168.1.70:10520/api/data/productos")
       .then((response) => response.json())
       .then((data) => {
         this.productos = data;
         this.productosOriginales = data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  },
-  mounted() {
-    fetch("http://localhost:5000/images/anuncios")
-      .then((response) => response.json())
-      .then((data) => {
-        this.imagenes = data;
         for (let i = 0; i < this.productos.length; i++) {
           const a = this.imagenes.filter((image) => {
             if (image.productos_id == this.productos[i].id) {
@@ -272,6 +326,9 @@ export default {
           this.productos[i].imagen = a && a.length > 0 ? a[0].name : "null.png";
         }
         this.productos = this.productosOriginales;
+      })
+      .catch((error) => {
+        console.log(error);
       });
   },
 };

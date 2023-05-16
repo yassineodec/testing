@@ -157,7 +157,7 @@ export default {
         this.password.length >= 2
       ) {
         this.axios
-          .post("http://127.0.0.1:10520/api/user/login", {
+          .post("http://192.168.1.70:10520/api/user/login", {
             username: this.email,
             password: md5(this.password),
           })

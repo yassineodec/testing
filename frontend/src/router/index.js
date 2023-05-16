@@ -69,6 +69,30 @@ const routes = [
       }
     },
   },
+  {
+    path: "/mis-anuncios",
+    name: "mis anuncios",
+    component: () => import("../views/MisAnuncios.vue"),
+    beforeEnter: (to, from, next) => {
+      if (!window.sessionStorage.getItem("access_token") == "") {
+        next();
+      } else {
+        next("/");
+      }
+    },
+  },
+  {
+    path: "/vista-solitaria/:id",
+    name: "vista solitaria",
+    component: () => import("../views/VistaSolitaria.vue"),
+    beforeEnter: (to, from, next) => {
+      if (!window.sessionStorage.getItem("access_token") == "") {
+        next();
+      } else {
+        next("/");
+      }
+    },
+  },
 ];
 
 const router = createRouter({

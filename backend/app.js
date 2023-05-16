@@ -1,21 +1,21 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
-const app = express();
+const api = express();
 
 const userApi = require("./api/userApi.js");
 const createApi = require("./api/createApi.js");
 const dataApi = require("./api/dataApi.js");
 
 // analysis application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+api.use(bodyParser.urlencoded({ extended: false }));
 // analysis application/json
-app.use(bodyParser.json());
+api.use(bodyParser.json());
 
-app.use(cors());
+api.use(cors());
 
 //cross-domain requests
-app.all("*", function (req, res, next) {
+api.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -27,9 +27,10 @@ app.all("*", function (req, res, next) {
   next();
 });
 
-app.use("/api/user", userApi);
-app.use("/api/data", dataApi);
-app.use("/api/createApi", createApi);
+api.use("/api/user", userApi);
+api.use("/api/data", dataApi);
+api.use("/api/createApi", createApi);
 
-app.listen(10520);
-console.log("success");
+api.listen(10520);
+console.log("Se ha conectado correctamente a la BD");
+console.log("----------------------------------");

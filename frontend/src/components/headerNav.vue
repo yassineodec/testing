@@ -56,7 +56,7 @@
       >
     </div>
     <div v-else-if="justShowit" class="navbar-end">
-      <div class="dropdown dropdown-end">
+      <div class="dropdown dropdown-end" @click.stop="toggleDropdown">
         <label tabindex="0" class="btn btn-ghost btn-circle avatar">
           <div class="w-9 rounded-full">
             <svg
@@ -78,16 +78,22 @@
         <ul
           tabindex="0"
           class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-40"
+          v-if="isOpen"
         >
           <li>
-            <router-link to="/profile"
-              ><a class="justify-between"> Profile </a></router-link
-            >
+            <router-link to="/profile" @click="closeDropdown">
+              <a class="justify-between"> Profile </a>
+            </router-link>
           </li>
           <li>
-            <router-link to="/create-post"
-              ><a class="justify-between"> Crear Anuncio </a></router-link
-            >
+            <router-link to="/create-post" @click="closeDropdown">
+              <a class="justify-between"> Crear Anuncio </a>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/mis-anuncios" @click="closeDropdown">
+              <a class="justify-between"> Mis Anuncios </a>
+            </router-link>
           </li>
           <li @click="$store.dispatch('logOut')"><a>Logout</a></li>
         </ul>
@@ -98,6 +104,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      isOpen: false,
+    };
+  },
   computed: {
     justShowit() {
       if (this.$store.state.hasToken == true) {
@@ -105,6 +116,15 @@ export default {
       } else {
         return false;
       }
+    },
+  },
+  methods: {
+    toggleDropdown() {
+      this.isOpen = true;
+    },
+    closeDropdown() {
+      this.isOpen = false; // Cierra el dropdown al seleccionar una opción
+      console.log("ssssssssssssssssssssss");
     },
   },
 };

@@ -172,7 +172,7 @@ export default {
         // console.log(`Name : ${this.name}, Email : ${this.email}, Password : ${this.password}`)
 
         this.axios
-          .post("http://127.0.0.1:10520/api/user/add", {
+          .post("http://192.168.1.70:10520/api/user/add", {
             username: this.name,
             email: this.email,
             password: md5(this.password),

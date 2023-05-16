@@ -1,17 +1,52 @@
 <template>
-  <div style="text-align: center">
-    <h1
-      class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white"
-    >
-      Información de
-      <span
-        class="underline underline-offset-3 decoration-8 decoration-orange-500 dark:decoration-orange-500"
-      >
-        CityCar
-      </span>
-    </h1>
-  </div>
-  <br />
+  <section class="text-gray-600 body-font">
+    <div class="container px-5 py-4 mx-auto mb-12">
+      <div class="flex flex-wrap w-full mb-8">
+        <div class="w-full mb-6 lg:mb-0">
+          <h1
+            class="sm:text-4xl text-5xl font-medium title-font mb-2 text-gray-900"
+          >
+            Statistic
+          </h1>
+          <div class="h-1 w-20 bg-orange-500 rounded"></div>
+        </div>
+      </div>
+      <div class="flex flex-wrap -m-4 text-center">
+        <div class="p-4 sm:w-1/4 w-1/2">
+          <div class="bg-orange-500 rounded-lg p-2 xl:p-6 shadow">
+            <h2 class="title-font font-medium sm:text-4xl text-3xl text-white">
+              2.7K
+            </h2>
+            <p class="leading-relaxed text-gray-100 font-bold">Users</p>
+          </div>
+        </div>
+        <div class="p-4 sm:w-1/4 w-1/2">
+          <div class="bg-orange-500 rounded-lg p-2 xl:p-6 shadow">
+            <h2 class="title-font font-medium sm:text-4xl text-3xl text-white">
+              1.8K
+            </h2>
+            <p class="leading-relaxed text-gray-100 font-bold">Subscribes</p>
+          </div>
+        </div>
+        <div class="p-4 sm:w-1/4 w-1/2">
+          <div class="bg-orange-500 rounded-lg p-2 xl:p-6 shadow">
+            <h2 class="title-font font-medium sm:text-4xl text-3xl text-white">
+              35
+            </h2>
+            <p class="leading-relaxed text-gray-100 font-bold">Downloads</p>
+          </div>
+        </div>
+        <div class="p-4 sm:w-1/4 w-1/2">
+          <div class="bg-orange-500 rounded-lg p-2 xl:p-6 shadow">
+            <h2 class="title-font font-medium sm:text-4xl text-3xl text-white">
+              4
+            </h2>
+            <p class="leading-relaxed text-gray-100 font-bold">Products</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <div class="grid h-screen px-95 p-10 mx-auto bg-gray-200 no-top-padding">
     <div class="my-div">
       <div class="flex justify-center">

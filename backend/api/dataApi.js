@@ -1,25 +1,58 @@
 const models = require("../db/db");
 const express = require("express");
-const data_router = express.Router();
+const router_datos = express.Router();
 const mysql = require("mysql");
-const $sql = require("../db/sqlMap");
 
-let conn = mysql.createConnection(models.mysql);
-conn.connect();
-conn.on("error", (err) => {
+const { authenticateToken } = require("./functions");
+
+let conexion = mysql.createConnection(models.mysql);
+conexion.connect();
+conexion.on("error", (err) => {
   console.log("Re-connecting lost conn: ");
-  conn = mysql.createConnection(models.mysql);
+  conexion = mysql.createConnection(models.mysql);
 });
 
-data_router.get("/productos", (req, res) => {
+router_datos.get("/productos", (req, res) => {
   const sql = "SELECT * FROM productos ORDER BY fecha_publicacion DESC";
-  conn.query(sql, (error, results) => {
+  conexion.query(sql, (error, results) => {
     if (error) throw error;
     res.json(results);
   });
 });
 
-data_router.post("/productos", (req, res) => {
+router_datos.get("/productos/:userId", authenticateToken, (req, res) => {
+  const userId = req.params.userId;
+  const sql =
+    "SELECT * FROM productos WHERE user_id = ? ORDER BY fecha_publicacion DESC";
+  conexion.query(sql, [userId], (error, results) => {
+    if (error) throw error;
+    res.json(results);
+  });
+});
+
+router_datos.get(
+  "/productos/solitario/:productId",
+  authenticateToken,
+  (req, res) => {
+    const productId = req.params.productId;
+    const sql = "SELECT * FROM productos WHERE id = ?";
+    conexion.query(sql, [productId], (error, results) => {
+      if (error) throw error;
+      res.json(results);
+    });
+  }
+);
+
+router_datos.delete("/productos/:productId", authenticateToken, (req, res) => {
+  const productId = req.params.productId;
+  const sql = "DELETE FROM productos WHERE id = ?";
+  conexion.query(sql, [productId], (error, results) => {
+    if (error) throw error;
+    res.json({ message: "Producto eliminado correctamente" });
+  });
+});
+
+router_datos.post("/productos", authenticateToken, (req, res) => {
   const {
     id,
     nombre_producto,
@@ -54,7 +87,7 @@ data_router.post("/productos", (req, res) => {
     user_id,
   ];
 
-  conn.query(sql, values, (error, result) => {
+  conexion.query(sql, values, (error, result) => {
     if (error) {
       console.error(error);
       res.status(500).send("Error al insertar el producto");
@@ -65,7 +98,7 @@ data_router.post("/productos", (req, res) => {
   });
 });
 
-data_router.get("/valoraciones", (req, res) => {
+router_datos.get("/valoraciones", authenticateToken, (req, res) => {
   const sql = `
   SELECT user_data.valoracion, user_data.mensaje, user.username, user.email 
   FROM user_data 
@@ -74,7 +107,7 @@ data_router.get("/valoraciones", (req, res) => {
   LIMIT 4
 `;
 
-  conn.query(sql, (err, results) => {
+  conexion.query(sql, (err, results) => {
     if (err) {
       console.log(err);
       res.sendStatus(500);
@@ -84,4 +117,4 @@ data_router.get("/valoraciones", (req, res) => {
   });
 });
 
-module.exports = data_router;
+module.exports = router_datos;

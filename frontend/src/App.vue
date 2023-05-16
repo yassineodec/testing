@@ -1,6 +1,5 @@
 <template>
   <header-nav />
-  <br />
   <div>
     <router-view />
   </div>
@@ -24,6 +23,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: rgba(229, 231, 235, 255);
+  min-height: 100vh;
   //   text-align: center;
   //   color: #2c3e50;
 }
